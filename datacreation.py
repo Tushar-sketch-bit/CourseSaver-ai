@@ -6,7 +6,7 @@ from faker import Faker
 
 fake=Faker()
 
-n=1000
+n=2000
 
 
 
@@ -16,9 +16,6 @@ quiz_avg_score=np.clip(np.round(np.random.normal(75,15,n),2),0,100).tolist()
 videos_watched=np.random.randint(0,50,n).tolist()
 last_login_days_ago=np.random.randint(0,30,n).tolist()
 completed=np.random.choice([0,1],size=n,p=[0.3,0.7]).tolist()
-
-
-
 
 
 
