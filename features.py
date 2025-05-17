@@ -3,7 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-import functionForFeatures
+from utils.functionForFeatures import engagement_level,label,retention_label
 ROOT_DIR=os.path.dirname(__file__)
 data_set_path=os.path.join(ROOT_DIR,'data/edtech.csv')
 df=pd.read_csv(data_set_path)
@@ -32,7 +32,10 @@ central_quiz_df=df[(df['quiz_avg_score']>quiz_q1)&(df['quiz_avg_score']<quiz_q2)
 
 #better quiz mean
 
-final_quiz_mean=(lower_quiz_df['quiz_avg_score'].mean()+upper_quiz_df['quiz_avg_score'].mean()+central_quiz_df['quiz_avg_score'].mean())/3
+final_quiz_mean=(lower_quiz_df['quiz_avg_score'].mean()+
+                 upper_quiz_df['quiz_avg_score'].mean()+
+                  central_quiz_df['quiz_avg_score'].mean())/3
+
 df['quiz_deviation']=df['quiz_avg_score']-final_quiz_mean
 
 #derived features of actual engagement
@@ -52,15 +55,15 @@ better_engagement_mean=(lower_engagement_df['actual_engagement'].mean()+
 
 
 
-df['engagement_level']=df['actual_engagement'].apply(functionForFeatures.engagement_level)    
+df['engagement_level']=df['actual_engagement'].apply(engagement_level)    
 df.groupby('engagement_level')['quiz_avg_score'].mean()
-df['label_student']=df.apply(functionForFeatures.label,axis=1)
+df['label_student']=df.apply(label,axis=1)
 
 df['retention_factor']=np.where(
     df['videos_watched']==0,0,(df['quiz_avg_score']/100)*(df['actual_engagement']/df['videos_watched'])
 )
 
-df['retention_level']=df['retention_factor'].apply(functionForFeatures.retention_label)
+df['retention_level']=df['retention_factor'].apply(retention_label)
 #print("best mean: ",final_quiz_mean)
 #print("Actual engagement time : ",df['actual_engagement'])
 #print("Avg engagement time : ",better_engagement_mean)
