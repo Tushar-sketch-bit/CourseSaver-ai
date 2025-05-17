@@ -4,17 +4,17 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from utils.functionForFeatures import engagement_level,label,retention_label
+
+
+
+
+
 ROOT_DIR=os.path.dirname(__file__)
 data_set_path=os.path.join(ROOT_DIR,'data/edtech.csv')
 df=pd.read_csv(data_set_path)
 
 
 
-#print(np.array(df.median()))
-
-#df['log_time_spent'] = np.log1p(df['total_time_spent'])
-#print(df.head(10))
-#df=df.sort_values('total_time_spent',ascending=True)
 print("maximum time spent: ",df['total_time_spent'].max())
 print("mean time spent: ",df['total_time_spent'].mean())
 print("minimum time spent: ",df['total_time_spent'].min())
@@ -24,36 +24,37 @@ print("Deviation of quiz score from it's mean: ",df['quiz_avg_score'].std())
 std_deviation=df['quiz_avg_score'].std()
 
 #derived features of quiz scores
-quiz_q1=df['quiz_avg_score'].quantile(0.33)
-quiz_q2=df['quiz_avg_score'].quantile(0.66)
-lower_quiz_df=df[df['quiz_avg_score']<=quiz_q1]
-upper_quiz_df=df[df['quiz_avg_score']>=quiz_q2]
-central_quiz_df=df[(df['quiz_avg_score']>quiz_q1)&(df['quiz_avg_score']<quiz_q2)]
+#quiz_q1=df['quiz_avg_score'].quantile(0.33)
+#quiz_q2=df['quiz_avg_score'].quantile(0.66)
+#lower_quiz_df=df[df['quiz_avg_score']<=quiz_q1]
+#upper_quiz_df=df[df['quiz_avg_score']>=quiz_q2]
+#central_quiz_df=df[(df['quiz_avg_score']>quiz_q1)&(df['quiz_avg_score']<quiz_q2)]
 
 #better quiz mean
 
-final_quiz_mean=(lower_quiz_df['quiz_avg_score'].mean()+
-                 upper_quiz_df['quiz_avg_score'].mean()+
-                  central_quiz_df['quiz_avg_score'].mean())/3
+#final_quiz_mean=(lower_quiz_df['quiz_avg_score'].mean()+
+                 #upper_quiz_df['quiz_avg_score'].mean()+
+                 # central_quiz_df['quiz_avg_score'].mean())/3
 
-df['quiz_deviation']=df['quiz_avg_score']-final_quiz_mean
+#df['quiz_deviation']=df['quiz_avg_score']-final_quiz_mean
 
 #derived features of actual engagement
-df['actual_engagement']=df['total_time_spent']*df['videos_watched']
-df['actual_engagement']=np.where(df['actual_engagement']>300,df['actual_engagement']*0.7,df['actual_engagement'])
-engagement_q1=df['actual_engagement'].quantile(0.33)
-engagement_q2=df['actual_engagement'].quantile(0.66)
-lower_engagement_df=df[df['actual_engagement']<=engagement_q1]
-upper_engagement_df=df[df['actual_engagement']>=engagement_q2]
-central_engagement_df=df[(df['actual_engagement']>engagement_q1)&(df['actual_engagement']<engagement_q2)]
+#df['actual_engagement']=df['total_time_spent']*df['videos_watched']
+#df['actual_engagement']=np.where(df['actual_engagement']>300,df['actual_engagement']*0.7,df['actual_engagement'])
+#engagement_q1=df['actual_engagement'].quantile(0.33)
+#engagement_q2=df['actual_engagement'].quantile(0.66)
+#lower_engagement_df=df[df['actual_engagement']<=engagement_q1]
+#upper_engagement_df=df[df['actual_engagement']>=engagement_q2]
+#central_engagement_df=df[(df['actual_engagement']>engagement_q1)&(df['actual_engagement']<engagement_q2)]
 
 #better engagement mean
 
-better_engagement_mean=(lower_engagement_df['actual_engagement'].mean()+
-                        upper_engagement_df['actual_engagement'].mean()+
-                        central_engagement_df['actual_engagement'].mean())/3
+#better_engagement_mean=(lower_engagement_df['actual_engagement'].mean()+
+                        #upper_engagement_df['actual_engagement'].mean()+
+                        #central_engagement_df['actual_engagement'].mean())/3
 
-
+df['actual_engagement']=df['total_time_spent']*df['videos_watched']
+df['actual_engagement']=np.where(df['actual_engagement']>300,df['actual_engagement']*0.7,df['actual_engagement'])
 
 df['engagement_level']=df['actual_engagement'].apply(engagement_level)    
 df.groupby('engagement_level')['quiz_avg_score'].mean()

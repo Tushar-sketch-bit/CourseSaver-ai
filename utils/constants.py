@@ -9,14 +9,14 @@ dataframe=pd.read_csv(data_set_path)
 
 #quiz_mean
 
-std_deviation=dataframe['quiz_mean'].std()
+std_deviation=dataframe['quiz_avg_score'].std()
 
 def quiz__mean():
-    quiz_q1=df['quiz_avg_score'].quantile(0.33)
-    quiz_q2=df['quiz_avg_score'].quantile(0.66)
-    lower_quiz_df=df[df['quiz_avg_score']<=quiz_q1]
-    upper_quiz_df=df[df['quiz_avg_score']>=quiz_q2]
-    central_quiz_df=df[(df['quiz_avg_score']>quiz_q1)&(df['quiz_avg_score']<quiz_q2)]
+    quiz_q1=dataframe['quiz_avg_score'].quantile(0.33)
+    quiz_q2=dataframe['quiz_avg_score'].quantile(0.66)
+    lower_quiz_df=dataframe[dataframe['quiz_avg_score']<=quiz_q1]
+    upper_quiz_df=dataframe[dataframe['quiz_avg_score']>=quiz_q2]
+    central_quiz_df=dataframe[(dataframe['quiz_avg_score']>quiz_q1)&(dataframe['quiz_avg_score']<quiz_q2)]
 
 #better quiz mean
 
