@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 
 ROOT_DIR=os.path.dirname(os.path.dirname(__file__))
-data_set_path=os.path.join(ROOT_DIR,'data/edtech.csv')
-dataframe=pd.read_csv(data_set_path)
+DATA_SET_PATH=os.path.join(ROOT_DIR,'data/edtech.csv')
+dataframe=pd.read_csv(DATA_SET_PATH)
 
 
 #quiz_mean
