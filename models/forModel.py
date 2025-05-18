@@ -5,9 +5,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 import pandas as pd
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 from utils.features import get_featured_df
-ROOT_DIR=os.path.dirname(__file__)
-features_path=os.path.join(ROOT_DIR,'features.py')
 
 le=LabelEncoder()
 
