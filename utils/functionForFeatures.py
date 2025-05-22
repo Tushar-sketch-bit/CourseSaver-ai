@@ -18,7 +18,7 @@ def label(row):
     elif row['actual_engagement']>better_engagement_mean and row['quiz_avg_score']>quiz_mean:
         return 'hardworking but needs help'
     else: 
-        return 'At risk'    
+        return 'Khel khatam hai'    
     
     
 def retention_label(val):

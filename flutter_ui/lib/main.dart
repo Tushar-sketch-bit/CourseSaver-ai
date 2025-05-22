@@ -1,113 +1,118 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CourseSaverApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CourseSaverApp extends StatelessWidget {
+  const CourseSaverApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'CourseSaver AI',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 15, 150)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Course Saver AI'),
+      home: const CourseSaverHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class CourseSaverHomePage extends StatefulWidget {
+  const CourseSaverHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CourseSaverHomePage> createState() => _CourseSaverHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _CourseSaverHomePageState extends State<CourseSaverHomePage> {
+  final TextEditingController timeController = TextEditingController();
+  final TextEditingController videoController = TextEditingController();
+  final TextEditingController scoreController = TextEditingController();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-  void _decrementCounter(){
-    setState(() {
-      _counter--;
-    });
+  String prediction = "";
+
+  Future<void> getPrediction() async {
+    final double timeSpent = double.tryParse(timeController.text) ?? 0;
+    final int videosWatched = int.tryParse(videoController.text) ?? 0;
+    final double quizScore = double.tryParse(scoreController.text) ?? 0;
+
+    final response = await http.post(
+      Uri.parse(
+        'http://10.0.2.2:5000/predict',
+      ), // for Android emulator use 10.0.2.2
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "time_spent": timeSpent,
+        "videos_watched": videosWatched,
+        "quiz_score": quizScore,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        prediction = data['prediction'];
+      });
+    } else {
+      setState(() {
+        prediction = "Error: Server not responding.";
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      appBar: AppBar(title: const Text("CourseSaver AI")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextField(
+              controller: timeController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Time Spent on Website (hrs)",
+              ),
             ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: videoController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Videos Watched"),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: scoreController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Quiz/Test Score"),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: getPrediction,
+              child: const Text("Predict"),
+            ),
+            const SizedBox(height: 30),
+            if (prediction.isNotEmpty)
+              Card(
+                color: Colors.grey.shade200,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    "Prediction: $prediction",
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
-      floatingActionButton: Row(
-         mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-           FloatingActionButton(
-           onPressed: _incrementCounter,
-           tooltip: 'Increment',
-           child: const Icon(Icons.add),
-         ),
-         const SizedBox(width: 10),
-         FloatingActionButton(
-          onPressed: _decrementCounter,
-          tooltip: 'Decrement',
-          child: const Icon(Icons.remove),
-         ),
-  ],
-),
-
-      
-       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
